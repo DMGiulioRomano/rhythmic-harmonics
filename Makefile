@@ -1,47 +1,77 @@
-# Nome del file Python per Latex
+# Directory variables
+DIR_CS=csound
+DIR_TEX=latex
+DIR_WAV=outputWav
+DIR_EXPORT=export
+
+# Python script names for LaTeX and Csound
 PYSCRIPT_TEX=latex.py
-# Nome del file Python per Csound
 PYSCRIPT_CSOUND=csound.py
-# Nome del file di input markdown
+
+# Input and output file names
 INPUT=input.md
-# Nome del file di output generato dallo script Python per Latex
 OUTPUT_TEX=parte.tex
-# Nome del file di output generato dallo script Python per Csound
 OUTPUT_SCO=eventi.sco
-# Nome del file TeX da compilare con pdflatex
 MAIN_TEX=armonicheRitmicheLayout.tex
-# Nome del file PDF finale
-OUTPUT_PDF=$(basename $(MAIN_TEX)).pdf
-# Nome del file PDF finale
-OUTPUT_SVG=$(basename $(MAIN_TEX)).svg
+OUTPUT_PDF=armonicheRitmicheLayout.pdf
+OUTPUT_SVG=armonicheRitmicheLayout.svg
 
-# Regola principale
-all: latex csound
-
-# Target per generare il file Latex
-latex: $(OUTPUT_PDF)
-
-$(OUTPUT_TEX): $(PYSCRIPT_TEX) $(INPUT)
-	python3 $(PYSCRIPT_TEX) $(INPUT)
-
-$(OUTPUT_PDF): $(OUTPUT_TEX) $(MAIN_TEX)
-	pdflatex $(MAIN_TEX)
-
-# Target per generare il file Csound
-csound: $(OUTPUT_SCO)
-
-$(OUTPUT_SCO): $(PYSCRIPT_CSOUND) $(INPUT)
-	python3 $(PYSCRIPT_CSOUND) $(INPUT)
+# Default rule to build everything
+all: csound latex
 
 
-print: 
-	pdflatex $(MAIN_TEX)
-	pdf2svg $(OUTPUT_PDF) $(OUTPUT_SVG)
+# Rule to create necessary directories
+create_dirs:
+	@mkdir -p $(DIR_TEX)/$(DIR_EXPORT) $(DIR_CS)/$(DIR_WAV)
 
 
 
-# Pulizia dei file generati
+#-----------------------------------
+
+latex: latexpy pdf
+
+# Rule to run the LaTeX Python script
+latexpy: create_dirs 
+	cd $(DIR_TEX) && python3 $(PYSCRIPT_TEX)
+
+# Rule to generate the PDF
+pdf: create_dirs
+	cd $(DIR_TEX) && pdflatex -output-directory=$(DIR_EXPORT) $(MAIN_TEX)
+
+#-----------------------------------
+
+
+
+
+#-----------------------------------
+
+csound: csoundpy outputWav
+
+# Rule to generate the Csound file
+csoundpy:
+	cd $(DIR_CS) && python3 $(PYSCRIPT_CSOUND)
+
+outputWav: 
+	cd $(DIR_CS) && csound -o $(DIR_WAV)/output.wav orc.orc $(OUTPUT_SCO)
+#-----------------------------------
+
+
+
+
+
+# Rule to convert the PDF to SVG
+print: pdf
+	pdflatex -output-directory=$(DIR_EXPORT) $(MAIN_TEX)
+	pdf2svg $(DIR_EXPORT)/$(OUTPUT_PDF) $(DIR_EXPORT)/$(OUTPUT_SVG)
+
+
+
+
+
+
+
+# Clean up generated files
 clean:
-	rm -f $(OUTPUT_TEX) $(OUTPUT_PDF) $(OUTPUT_SCO) *.aux *.log *.out
+	rm -rf $(DIR_TEX)/$(OUTPUT_TEX) $(DIR_TEX)/$(DIR_EXPORT) $(DIR_TEX)/$(DIR_EXPORT)/$(OUTPUT_SVG) $(DIR_CS)/$(OUTPUT_SCO) *.aux *.log *.out
 
-.PHONY: all latex csound clean
+.PHONY: all pdf csound print clean
