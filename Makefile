@@ -72,6 +72,6 @@ print: pdf
 
 # Clean up generated files
 clean:
-	rm -rf $(DIR_TEX)/$(OUTPUT_TEX) $(DIR_TEX)/$(DIR_EXPORT) $(DIR_TEX)/$(DIR_EXPORT)/$(OUTPUT_SVG) $(DIR_CS)/$(OUTPUT_SCO) *.aux *.log *.out
+	rm -rf $(DIR_TEX)/$(OUTPUT_TEX) $(DIR_TEX)/$(DIR_EXPORT) $(DIR_TEX)/$(DIR_EXPORT)/$(OUTPUT_SVG) $(DIR_CS)/$(OUTPUT_SCO) *.aux *.log *.out $(DIR_CS)/$(DIR_WAV)
 
 .PHONY: all pdf csound print clean
