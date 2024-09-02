@@ -553,7 +553,10 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+
+
+# my gitignore
+
 *.wav
-
-
+*.pdf
 *.sco
