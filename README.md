@@ -31,7 +31,8 @@ This project involves generating rhythmic harmonic structures using LaTeX and Cs
 
 ## Csound processing
 
-The `csound.py` script you provided seems to be responsible for orchestrating and generating sound events using Csound. Here’s a breakdown of how you can modify the script to change the overall tempo and how the script handles the dictionary of sound files and their maximum durations:
+The `csound.py` script is responsible for orchestrating and generating sound events using Csound. 
+Here’s a breakdown of how you can modify the script to change the overall tempo and how the script handles the dictionary of sound files and their maximum durations:
 
 ### Changing the Overall Tempo
 
