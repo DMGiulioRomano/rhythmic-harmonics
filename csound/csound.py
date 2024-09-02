@@ -1,16 +1,15 @@
-
 # ---------------------------------------------------------------
 #                           PARAMETERS
 # Define the sound file dictionary with lists containing the sound file and the max duration
 COLOR_TO_SOUND_FILE = {
-    '0': ['../rec/1.wav', 1.0],  # File and maximum duration
+    '0': ['../rec/1.wav', 0.4],  # File and maximum duration
     '1': ['../rec/2.wav', 1.0],  # File and maximum duration
     # Add more mappings if needed
 }
 # Boolean to decide whether to calculate durations based on the minimum of max duration and difference in 'at'
 poly = False  # Set to True if you want the duration to be the minimum of max duration and difference in 'at'
 # Define the length of the line in seconds
-duration0thHarmonics = 10.0
+duration0thHarmonics = 7.0
 # ---------------------------------------------------------------
 
 
@@ -46,7 +45,7 @@ class TimeOrchestrator:
 
 
 class Evento:
-    def __init__(self, at, sound_file='default.wav', dur=1):
+    def __init__(self, at, sound_file='default.wav',max_dur=.1, dur=1):
         """
         Initializes an Evento object with the specified parameters.
 
@@ -58,6 +57,7 @@ class Evento:
         self.at = at
         self.dur = dur  # Duration of the event
         self.sound_file = sound_file  # Sound file associated with the event
+        self.max_dur = max_dur
 
     def to_csound(self):
         """
@@ -86,7 +86,7 @@ def parse_input_line(line, orchestrator):
         # Calculate 'at' using the orchestrator
         at = orchestrator.calculate_at(x, y, z)
 
-        return Evento(at, sound_file=sound_file, dur=max_duration)
+        return Evento(at, sound_file=sound_file, max_dur=max_duration)
 
     except ValueError as e:
         print(f"Error: {e}")
@@ -103,12 +103,12 @@ def process_markdown(input_file, orchestrator, poly):
                 if evento:
                     eventi.append(evento)
     
-    if poly:
+    if not poly:
         # Calculate the duration of each event as the minimum between the max duration and the difference in 'at' value
         for i in range(len(eventi) - 1):
             next_at = eventi[i + 1].at
-            max_duration = COLOR_TO_SOUND_FILE.get(next_at, [None, 1.0])[1]
-            eventi[i].dur = min(next_at - eventi[i].at, max_duration)
+            max_duration = eventi[i].max_dur
+            eventi[i].dur = max(next_at - eventi[i].at, max_duration)
         
         # The last event can have a default duration, e.g., 1 second
         if eventi:
@@ -116,7 +116,7 @@ def process_markdown(input_file, orchestrator, poly):
     else:
         # If poly is False, set the duration to the max duration from the dictionary
         for evento in eventi:
-            evento.dur = COLOR_TO_SOUND_FILE.get(evento.sound_file.split('.')[0], [None, 1.0])[1]
+            evento.dur = evento.max_dur
 
     return eventi
 

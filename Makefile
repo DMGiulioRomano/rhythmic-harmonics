@@ -28,14 +28,14 @@ create_dirs:
 
 #-----------------------------------
 
-latex: latexpy pdf
+latex: create_dirs latexpy pdf
 
 # Rule to run the LaTeX Python script
-latexpy: create_dirs 
+latexpy:  
 	cd $(DIR_TEX) && python3 $(PYSCRIPT_TEX)
 
 # Rule to generate the PDF
-pdf: create_dirs
+pdf: 
 	cd $(DIR_TEX) && pdflatex -output-directory=$(DIR_EXPORT) $(MAIN_TEX)
 
 #-----------------------------------
@@ -45,7 +45,7 @@ pdf: create_dirs
 
 #-----------------------------------
 
-csound: csoundpy outputWav
+csound: create_dirs csoundpy outputWav
 
 # Rule to generate the Csound file
 csoundpy:
