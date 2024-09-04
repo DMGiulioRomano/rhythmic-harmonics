@@ -556,7 +556,7 @@ $RECYCLE.BIN/
 
 
 # my gitignore
-
+*.bak
 *.wav
 *.pdf
 *.sco
