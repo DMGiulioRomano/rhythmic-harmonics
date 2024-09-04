@@ -1,17 +1,17 @@
 \documentclass[a3paper, landscape, border=1cm]{standalone}
 
 \usepackage{tikz}
-
-% Definizione della variabile FRAGMENT
-
-
+\tracingstats=2
+%   PAY ATTENTION !!!
+%If you modify the lines of code, you must also update the Makefile in the section related to replace_line.py. The lines are marked.
+%   PAY ATTENTION !!!
 \begin{document}
 
 \begin{tikzpicture}
 \def\makeval{2}
 % General parameters
 \def\length{22}           % Length of the line
-\def\spacing{0.8}         % Distance between lines
+\def\spacing{.95}         % Distance between lines
 \def\numLines{32}         % Number of lines
 \def\numUnits{\makeval}          % Number of units (number of grids)
 \def\frameMargin{0.5}     % Margin for the frame
@@ -25,8 +25,8 @@
     \begin{scope}[shift={(\k*\gridWidth,0)}]
 
     % Top frame
-    \draw[thick] (-\frameMargin, -\topSpace) -- (\length, -\topSpace);
-    \draw[thick, opacity=0] (-\frameMargin, 0) -- (\length, 0);
+%    \draw[thick] (-\frameMargin, -\topSpace) -- (\length, -\topSpace);
+%    \draw[thick, opacity=0] (-\frameMargin, 0) -- (\length, 0);
 
     % Loop to draw the lines
     \foreach \i in {1,...,\numLines} {
@@ -51,7 +51,7 @@
                 % Add label above the point (\k-1-1) only once per \k cycle
                 \ifnum\i=2
                     \ifnum\j=1
-                        \node[draw, rectangle, above, font=\large, inner sep=10pt, minimum width=1em, minimum height=1em] at (\xPos, \y + .95) {};%{$\k$};
+                        %\node[draw, rectangle, above, font=\large, inner sep=10pt, minimum width=1em, minimum height=1em] at (\xPos, \y + .95) {} %{$\k$};
                     \fi
                 \fi
 

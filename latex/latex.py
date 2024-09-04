@@ -1,9 +1,34 @@
-import re
 import os
-from collections import defaultdict
 import argparse
-# Dictionary for color mapping
+import sys
+import configparser
+# Add the path to the pyLib directory to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../pyLib')))
+from markdown_utils import read_markdown_file, filter_comments, parse_line, Voce
+
+# ---------------------------------------------------------------
+# Define default values
 layoutTempColor = {0: 'black', 1: 'red', 2: 'green', 3: 'violet'}
+input_markdown = "../input.md"
+# ---------------------------------------------------------------
+
+
+
+def load_config(config_file):
+    global layoutTempColor, input_markdown
+
+    config = configparser.ConfigParser()
+    config.read(config_file)
+
+    # Load layout colors
+    layout_color_str = config.get('Latex', 'layoutTempColor', fallback='')
+    layoutTempColor = {int(k): v for k, v in (item.split(':') for item in layout_color_str.split(', '))} if layout_color_str else layoutTempColor
+    
+    # Load input markdown file
+    input_markdown = config.get('Latex', 'input_markdown', fallback='../input.md')
+
+
+
 class Block:
     def __init__(self):
         self.colors = []  # List of Voce objects, each representing a color
@@ -33,13 +58,6 @@ class Block:
                 merged_block.add_voce(voce)
         return merged_block
     
-class Voce:
-    def __init__(self, color):
-        self.color = color  # The color associated with this Voce
-        self.punti = []     # List of points associated with this color
-
-    def add_point(self, point):
-        self.punti.append(point)  # Add a point to the list
 
 class Point:
     def __init__(self, first, second, third, color):
@@ -54,89 +72,10 @@ def write_max_first_to_md(max_first_value, filename="temp_max_first.md"):
         file.write(f"{max_first_value + 1}\n")
     print(f"Temporary Markdown file '{filename}' created with max_first_value: {max_first_value}")
 
-
-def read_markdown_file(input_file):
-    """Read the markdown file and return non-empty lines."""
-    with open(input_file, 'r') as md_file:
-        return [line.strip() for line in md_file.readlines() if line.strip()]
-
-
-def filter_comments(lines):
-    """Filter out lines that are comments (starting with '#')."""
-    return [line for line in lines if not line.startswith('#')]
-
-
-def parse_line(line):
-    """Parse a line of the markdown file and return its components."""
-    try:
-        parts = re.split(r'\s+', line, maxsplit=1)
-        if len(parts) < 2:
-            raise ValueError("Invalid format, expected two parts separated by spaces/tabs.")
-        
-        number_part = parts[0].strip()
-        additional_value = int(parts[1].strip())
-        
-        values = number_part.split('-')
-        if len(values) != 3:
-            raise ValueError("Invalid format in the number part, expected three values separated by hyphens.")
-        
-        first, second, third = map(int, values)
-        return first, second, third, additional_value
-    except ValueError as e:
-        print(f"Error: {e}")
-        return None
-'''
-def update_max_values(first, additional_value, max_first_value, max_color_value):
-    """Update the maximum values based on current values."""
-    max_first_value = max(max_first_value, first)
-    max_color_value = max(max_color_value, additional_value)
-    return max_first_value, max_color_value
-'''
-
-def update_max_values(a,b):
-    return max(a,b)
-
 def create_point(first, second, third, additional_value):
     """Create a Point instance and return it."""
     color = layoutTempColor.get(additional_value, 'red')
     return Point(first, second, third, color)
-
-def write_tex_file(output_file, blocks, block_pairs=None):
-    """Write the LaTeX file based on the blocks or block pairs."""
-    try:
-        with open(output_file, 'w') as tex_file:
-            if block_pairs:
-                for i in range(len(block_pairs)):
-                    block = block_pairs[i]
-                    for point in block:
-                        tex_file.write(f"\\fill[{point.color}] (point-{point.first}-{point.second}-{point.third}) circle (2pt);\n")
-                        tex_file.write(f"\\draw[thick] (point-{point.first}-{point.second}-{point.third}) circle [radius=0.3cm]; % Circle around node point-{point.first}-{point.second}-{point.third}\n")
-                    draw_arrows(tex_file, block)
-                    tex_file.write(f"\n")
-            else:
-                for color_index, points in enumerate(blocks):
-                    color = layoutTempColor.get(color_index, 'red')
-                    for point in points:
-                        tex_file.write(f"\\fill[{point.color}] (point-{point.first}-{point.second}-{point.third}) circle (2pt);\n")
-                        tex_file.write(f"\\draw[thick] (point-{point.first}-{point.second}-{point.third}) circle [radius=0.3cm]; % Circle around node point-{point.first}-{point.second}-{point.third}\n")
-                    draw_arrows(tex_file, points)
-                    tex_file.write(f"\n")
-    except Exception as e:
-        print(f"Error while writing file {output_file}: {e}")
-
-
-
-def draw_arrows(points):
-    """Draw arrows between consecutive points of the same color."""
-    string=""
-    for i in range(len(points) - 1):
-        p1, p2 = points[i], points[i + 1]
-        string+= f"\\draw[->, thick, color={p1.color}, line width=1px] (point-{p1.first}-{p1.second}-{p1.third}) -- (point-{p2.first}-{p2.second}-{p2.third});\n"
-    return string
-
-
-
-
 
 
 def process_markdown_block(input_file, output_dir):
@@ -251,9 +190,11 @@ if __name__ == "__main__":
     parser.add_argument('--fragments', action='store_true', help="Process fragments")
     parser.add_argument('--no-fragments', action='store_false', dest='fragments', help="Process color only")
     parser.add_argument('--output', type=str, default="unique.tex", help="Boolean to decide file name")
-
     args = parser.parse_args()
-    input_markdown = "../input.md"  # Nome del file di input
+
+    config_file = '../config.ini'  # Name of the config file
+    # Load the configuration
+    load_config(config_file)
     output_dir = "fragments"        # Directory per l'output nel caso del blocco
       # Nome del file di output nel caso del colore
 

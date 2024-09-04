@@ -560,3 +560,5 @@ $RECYCLE.BIN/
 *.wav
 *.pdf
 *.sco
+
+pyLib/__pycache__

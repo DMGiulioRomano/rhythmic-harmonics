@@ -1,0 +1,68 @@
+# Directory variables
+DIR_CS=csound
+DIR_TEX=latex
+DIR_WAV=outputWav
+DIR_INPUT_TEX=fragments
+DIR_EXPORT=export
+DIR_PY_MANIP=file_manipulation
+#FRAGS := $(shell grep 'frags =' $(CONFIG_FILE) | cut -d '=' -f 2 | xargs)
+FRAGS?=True
+#POLY := $(shell grep 'poly =' $(CONFIG_FILE) | cut -d '=' -f 2 | xargs)
+POLY=False
+# Python script names for LaTeX and Csound
+PYSCRIPT_TEX=latex.py
+PYSCRIPT_CSOUND=csound.py
+
+# Input and output file names
+INPUT=input.md
+MAIN_TEX=main.tex
+FRAGMENT=which_fragment.tex
+UNIQUE=unique.tex
+TEMP_FILE := temp_max_first.md
+TMP_TEX=tmp_combine_pdfs.tex
+CONFIG_FILE=config.ini
+#------
+OUTPUT_SCO=eventi.sco
+OUTPUT_PDF=partitura.pdf
+#------ for layout
+LAYOUT_TEX=layout.tex
+OUTPUT_LAYOUT=layout.pdf
+OUTPUT_SVG=layout.svg
+
+
+
+# Regola per generare il file config.env
+config_env:
+	@echo "# Directory variables" > makeLib/config.env
+	@echo "export DIR_CS=$(DIR_CS)" >> makeLib/config.env
+	@echo "export DIR_TEX=$(DIR_TEX)" >> makeLib/config.env
+	@echo "export DIR_WAV=$(DIR_WAV)" >> makeLib/config.env
+	@echo "export DIR_INPUT_TEX=$(DIR_INPUT_TEX)" >> makeLib/config.env
+	@echo "export DIR_EXPORT=$(DIR_EXPORT)" >> makeLib/config.env
+	@echo "export DIR_PY_MANIP=$(DIR_PY_MANIP)" >> makeLib/config.env
+	@echo "" >> makeLib/config.env
+	@echo "# Configuration variables" >> makeLib/config.env
+	@echo "export FRAGS=$(FRAGS)" >> makeLib/config.env
+	@echo "export POLY=$(POLY)" >> makeLib/config.env
+	@echo "" >> makeLib/config.env
+	@echo "# Python script names for LaTeX and Csound" >> makeLib/config.env
+	@echo "export PYSCRIPT_TEX=$(PYSCRIPT_TEX)" >> makeLib/config.env
+	@echo "export PYSCRIPT_CSOUND=$(PYSCRIPT_CSOUND)" >> makeLib/config.env
+	@echo "" >> makeLib/config.env
+	@echo "# Input and output file names" >> makeLib/config.env
+	@echo "export INPUT=$(INPUT)" >> makeLib/config.env
+	@echo "export MAIN_TEX=$(MAIN_TEX)" >> makeLib/config.env
+	@echo "export FRAGMENT=$(FRAGMENT)" >> makeLib/config.env
+	@echo "export UNIQUE=$(UNIQUE)" >> makeLib/config.env
+	@echo "export TEMP_FILE=$(TEMP_FILE)" >> makeLib/config.env
+	@echo "export TMP_TEX=$(TMP_TEX)" >> makeLib/config.env
+	@echo "export CONFIG_FILE=$(CONFIG_FILE)" >> makeLib/config.env
+	@echo "" >> makeLib/config.env
+	@echo "# Output file names" >> makeLib/config.env
+	@echo "export OUTPUT_SCO=$(OUTPUT_SCO)" >> makeLib/config.env
+	@echo "export OUTPUT_PDF=$(OUTPUT_PDF)" >> makeLib/config.env
+	@echo "" >> makeLib/config.env
+	@echo "# Layout files" >> makeLib/config.env
+	@echo "export LAYOUT_TEX=$(LAYOUT_TEX)" >> makeLib/config.env
+	@echo "export OUTPUT_LAYOUT=$(OUTPUT_LAYOUT)" >> makeLib/config.env
+	@echo "export OUTPUT_SVG=$(OUTPUT_SVG)" >> makeLib/config.env
